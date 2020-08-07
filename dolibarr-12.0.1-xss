@@ -1,5 +1,5 @@
 # Exploit Title: Dolibarr ERP/CRM <= 12.0.1 - stored Cross-Site Scripting
-# CVE: 
+# 
 # Date: 2020-08-07
 # Exploit Author: Hao Wang
 # Contact: haowang93104@gmail.com
